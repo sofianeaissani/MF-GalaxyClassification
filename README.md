@@ -1,5 +1,20 @@
 # MF-GalaxyClassification
 
+## Requirements (owner's setup)
+
+- Python 3.7
+- minkfncts2d 1.0 (https://github.com/moutazhaq/minkfncts2d)
+- astropy 4.0
+- numpy 1.18.2
+- matplotlib 3.2.0rc1
+- imageIO 2.6.1
+- photutils 0.7.2
+- Pillow 5.2.0
+- scikit-image 0.16.2
+- scikit-learn 0.23.1
+- scipy 1.3.0
+- statmorph 0.3.5 (https://github.com/vrodgom/statmorph)
+
 ## File tree
 
 | File | Content | Type |
