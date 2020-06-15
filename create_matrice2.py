@@ -5,7 +5,6 @@ import scipy.linalg
 from libs.pic_process import *
 from libs.minkos import *
 from libs.matrices3 import *
-import libs.matrices as mt
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -52,22 +51,25 @@ def main():
     print('shape vecteurs propres :', espp.shape)
     print('somme des vp :', np.sum(valp), "pourcentage des 3 premieres :", sorted_valp[0][1] + sorted_valp[1][1] + sorted_valp[2][1])
     #print('tableau des vp :', valp)
-    #eigenvalues_histogram(valp, 10)
-    new_DATA = compute_new_data_matrix(DATA, espp, valp, 8)
+    #eigenvalues_plot(valp, 25)
+    new_DATA = compute_new_data_matrix(DATA, espp, valp, 25)
+    plot_DATA_2D(new_DATA)
     print('shape new_DATA :', new_DATA.shape)
-    #Nb_Cl = [i for i in range(2, 27)]
-    #Inertia = []
-    #for i in Nb_Cl:
-      #Inertia.append(find_clusters(new_DATA, i)[1])
-    #plt.plot(Nb_Cl, Inertia)
-    #plt.xlabel("Nombre de clusters")
-    #plt.ylabel("Inertie")
-    #plt.show()
 
+    """Nb_Cl = [i for i in range(2, 27)]   # INERTIA_PLOT
+    Inertia = []
+    for i in Nb_Cl:
+      Inertia.append(find_clusters(new_DATA, i)[1])
+    plt.plot(Nb_Cl, Inertia)
+    plt.xlabel("Nombre de classes")
+    plt.ylabel("Inertie")
+    plt.show()"""
 
-    labels, intertia = get_DATA_2D_in_clusters(new_DATA, 5)
+    labels, inertia = get_DATA_2D_in_clusters(new_DATA, 5)
+    plot_DATA_2D_in_clusters(new_DATA, labels)
+    plt.show()
 
-    if True:
+    """if True:
       separ_DATA = {}
       for i, indiv in enumerate(DATA):
         v = labels[i]
@@ -100,7 +102,7 @@ def main():
     fig.add_subplot(1,4,1)
     plot_DATA_2D_in_clusters(new_DATA, labels)
     plt.tight_layout( )
-    plt.show()
+    plt.show()"""
 
 
 if __name__ == "__main__":

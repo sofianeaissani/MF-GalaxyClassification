@@ -135,8 +135,8 @@ def sort_eigenvalues(valeursPropres):
   return supertuples
 
 
-def eigenvalues_histogram(valeursPropres, n):
-  """ Affiche l'histogramme des n valeurs propres les plus importantes de valeursPropres 
+def eigenvalues_plot(valeursPropres, n):
+  """ Affiche la fonction de cumul des variances des n valeurs propres les plus importantes de valeursPropres 
   - Entrée : tableau des valeurs propres (format numpy)""" 
   assert n <= len(valeursPropres)
 
@@ -146,15 +146,17 @@ def eigenvalues_histogram(valeursPropres, n):
   ax = fig.add_axes([0.1,0.1,0.8,0.8])
   valeursPropres = valeursPropres[:n] # Tronquer
   x,y = [],[]
+  total = 0
   for j in range(len(valeursPropres)):
     val = valeursPropres[j]
-    x += [j]
-    y += [val[0]]
+    total += val[1]
+    x += [j+1]
+    y += [total]
   ax.bar(x,y)
-  plt.title("Éboulis des valeurs propres")
-  plt.xlabel(r"Indice $i$")
-  plt.ylabel(r"Valeur propre $\delta_i$")
+  plt.xlabel(r"Nombre de composantes principales $i$")
+  plt.ylabel(r"Proportion de variance expliquée $\delta_i/tr(\Delta)$")
   plt.show()
+
 
 
 def compute_new_data_matrix(DATA, espp, valeursPropres, n):
@@ -500,7 +502,7 @@ def plot_DATA_2D_in_clusters(DATA, labels):
         l_x.append(x1)
         l_y.append(y1)
 
-    plt.scatter(l_x, l_y,cmap="viridis", marker=markerslist[k],label="Group "+markerslist[k], color = cols[k]) #,edgecolor='black', linewidth='3')
+    plt.scatter(l_x, l_y,cmap="viridis", marker="+",label="Groupe "+markerslist[k], color = cols[k]) #,edgecolor='black', linewidth='3')
 
   plt.gca().set_xlabel(r"Projection sur $X'_1$ (en unité de $\sigma'_1$)")
   plt.gca().set_ylabel(r"Projection sur $X'_2$ (en unité de $\sigma'_2$)")
