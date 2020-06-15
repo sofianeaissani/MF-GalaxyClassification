@@ -33,14 +33,14 @@
 | --- |
 
 ### mainMF.py
-  `python3 main.py [FITS or DAT file] [optional args]`
+  `python3 mainMF.py [FITS or DAT file] [optional args]`
 
   - The path to the image can be absolute or relative.
-  - The optional arguments and their use can be seen typing `python3 main.py --h`
+  - The optional arguments and their use can be seen typing `python3 mainMF.py --h`
 
 
 ### mainCAS.py
-  `python3 morpho.py [FITS ou DAT file] [optional args]`
+  `python3 mainCAS.py [FITS ou DAT file] [optional args]`
 
 ### pcaClustering.py
 
