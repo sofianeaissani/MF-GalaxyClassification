@@ -9,11 +9,11 @@
 | libs/MF.py | Minkowski Functionals computing | Library |
 | libs/matProcess.py | Matrix building, PCA processing, graphics | Library |
 |   |   |   | 
-| mainMF.py | Computes and displays the Minkowski Functions of the input image (supported : .fits, .dat) | Program |
-| mfSmoothTransitionUnique.py | Displays the chosen Minkowski Function of an image for different smooth levels | Program |
-| mfSmoothTransitionAll.py | Displays all the Minkowski Functions of an image for different smooth levels | Program |
+| mainMF.py | Computes and displays the MF of the input image (supported : .fits, .dat) | Program |
+| mfSmoothTransitionUnique.py | Displays the chosen MF of an image for different smooth levels | Program |
+| mfSmoothTransitionAll.py | Displays all the MF of an image for different smooth levels | Program |
 | mfInteractive.py | Displays the binarized images corresponding to an input image in an interactive way | Program |
-| mfEvery.py | Displays the chosen Minkowski Function of all the images in a directory | Program |
+| mfEvery.py | Displays the chosen MF of all the images in a directory | Program |
 |   |   |   |
 | mainCAS.py | Computes C, A, S and other indicators (<img src="https://render.githubusercontent.com/render/math?math=M_{20}">, Gini...) on the input image | Program |
 |   |   |   |
@@ -22,11 +22,11 @@
 | noiseByStrength.py | Compares the effect of the chosen noise by strength on the input image | Program |
 | noiseFindThreshold.py | Finds the intensity level of the 2nd inflexion point of the smoothed intensity histogram of the input image | Program |
 |   |   |   |
-| pcaClustering.py | Executes the PCA and the <img src="https://render.githubusercontent.com/render/math?math=k">-means clustering on the images of the input directory | Program |
+| pcaClustering.py | Runs PCA and <img src="https://render.githubusercontent.com/render/math?math=k">-means clustering on the images of the input directory | Program |
 | pcaClustering2.py | Same, but it also prints the names of all the images of each cluster | Program |
 |   |   |   | 
 | plotClustersFromTxt.py | Plots a <img src="https://render.githubusercontent.com/render/math?math=n\times n"> sample of the images of the input .txt file | Program |
-| cropImages.py | Displays and crops all the images of the input directory according to user inputs | Program |
+| cropImages.py | Crops all the images of the input directory according to user inputs | Program |
 | thresholdDisplay.py | Displays some binarized images corresponding to an input image | Program |
 
 | **Warning : modifying the "Library" files can lead to a lot of errors in other programs.** |
