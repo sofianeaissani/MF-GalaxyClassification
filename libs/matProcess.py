@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.linalg
 import os,sys
-from libs.minkos import *
-from libs.pic_process import *
+from libs.MF import *
+from libs.imProcess import *
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 from sklearn.cluster import KMeans

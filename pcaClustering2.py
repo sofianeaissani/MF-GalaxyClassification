@@ -5,7 +5,6 @@ import scipy.linalg
 from libs.pic_process import *
 from libs.minkos import *
 from libs.matrices3 import *
-import libs.matrices as mt
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -54,7 +53,6 @@ def main():
     print('shape vecteurs propres :', espp.shape)
     print('somme des vp :', np.sum(valp), "pourcentage des 3 premieres :", sorted_valp[0][1] + sorted_valp[1][1] + sorted_valp[2][1])
     #print('tableau des vp :', valp)
-    #eigenvalues_histogram(valp, 10)
     new_DATA = compute_new_data_matrix(DATA, espp, valp, 8)
     print('shape new_DATA :', new_DATA.shape)
     #Nb_Cl = [i for i in range(2, 27)]

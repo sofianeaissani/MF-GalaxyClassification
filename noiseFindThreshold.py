@@ -1,6 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt
-from libs.pic_process import *
+from libs.imProcess import *
 from scipy import signal
 from copy import copy
 

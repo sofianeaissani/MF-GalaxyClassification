@@ -13,8 +13,8 @@ from astropy.convolution import convolve
 
 sys.path.insert(1, 'libs/')
 
-from pic_process import *
-from minkos import *
+from libs.imProcess import *
+from libs.MF import *
 
 
 

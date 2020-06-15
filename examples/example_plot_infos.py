@@ -5,10 +5,10 @@ import scipy.linalg
 lib_path = os.path.abspath(os.path.join(__file__, '..', ".."))
 sys.path.append(lib_path)
 
-from libs.pic_process import *
-from libs.minkos import *
-from libs.matrices3 import *
-import libs.matrices as mt
+from libs.imProcess import *
+from libs.MF import *
+from libs.matProcess import *
+import libs.matProcess as mt
 
 import matplotlib.pyplot as plt
 import matplotlib

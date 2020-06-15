@@ -1,6 +1,6 @@
 import sys
 import matplotlib.pyplot as plt
-from libs.pic_process import *
+from libs.imProcess import *
 import numpy as np
 from scipy import ndimage, misc
 import imageio

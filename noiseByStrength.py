@@ -14,9 +14,9 @@ from scipy.signal import convolve as scipy_convolve
 from astropy.convolution import convolve
 import matplotlib.image as mpimg
 
-from libs.pic_process import *
-from libs.minkos import *
-from libs.matrices3 import *
+from libs.imProcess import *
+from libs.MF import *
+from libs.matProcess import *
 from PIL import Image
 
 def median_of_treat(origfile, treat= gaussian_noise, parameter=1):

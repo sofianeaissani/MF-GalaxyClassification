@@ -6,8 +6,8 @@ from matplotlib.widgets import Slider, Button, RadioButtons
 lib_path = os.path.abspath(os.path.join(__file__, '..', "..", 'libs'))
 sys.path.append(lib_path)
 
-from pic_process import *
-from minkos import *
+from libs.imProcess import *
+from libs.MF import *
 
 parser = ""
 args = ""

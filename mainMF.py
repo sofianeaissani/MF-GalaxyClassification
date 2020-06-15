@@ -13,8 +13,8 @@ from astropy.convolution import Gaussian2DKernel
 from scipy.signal import convolve as scipy_convolve
 from astropy.convolution import convolve
 
-from libs.pic_process import *
-from libs.minkos import *
+from libs.imProcess import *
+from libs.MF import *
 
 def main(myFile):
 
