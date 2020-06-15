@@ -154,7 +154,7 @@ def eigenvalues_plot(valeursPropres, n):
     y += [total]
   ax.bar(x,y)
   plt.xlabel(r"Nombre de composantes principales $i$")
-  plt.ylabel(r"Proportion de variance expliquée $\delta_i/tr(\Delta)$")
+  plt.ylabel(r"Fraction de variance expliquée $\delta_i/tr(\Delta)$")
   plt.show()
 
 
@@ -189,8 +189,8 @@ def plot_DATA_2D(DATA,inside_pol = None):
       plt.scatter(x1,y1, c='red')
   plt.grid()
   plt.title('Projections de chaque individu sur les 2\n premières composantes principales')
-  plt.xlabel(r"Projection sur $X'_1$ (en unité de $\sigma'_1$)")
-  plt.ylabel(r"Projection sur $X'_2$ (en unité de $\sigma'_2$)")
+  plt.xlabel(r"Projection sur $X'_1/\sigma'_1$")
+  plt.ylabel(r"Projection sur $X'_2/\sigma'_1$")
 
   plt.show()
 
@@ -226,9 +226,9 @@ def plot_DATA_3D(DATA):
     y1 = indiv[1]
     z1 = indiv[2]
     ax.scatter(x1,y1,z1, c='red')
-  ax.set_xlabel(r"Projection sur $X'_1$ (en unité de $\sigma'_1$)")
-  ax.set_ylabel(r"Projection sur $X'_2$ (en unité de $\sigma'_2$)")
-  ax.set_zlabel(r"Projection sur $X'_3$ (en unité de $\sigma'_3$)")
+  ax.set_xlabel(r"Projection sur $X'_1/\sigma'_1$")
+  ax.set_ylabel(r"Projection sur $X'_2/\sigma'_2$")
+  ax.set_zlabel(r"Projection sur $X'_3/\sigma'_3$")
   # ax.set_title('Projections de chaque individu sur les 3\n premières composantes principales')
 
   plt.show()
@@ -265,8 +265,8 @@ def plot_DATA_3D_in_2D(DATA):
 
   #catter_seq(fig,ax,l_x,l_y,l_c,q1,q3,10)
   scatter_cont(fig, ax, l_x, l_y, l_c)
-  ax.set_xlabel(r"Projection sur $X'_1$ (en unité de $\sigma'_1$)")
-  ax.set_ylabel(r"Projection sur $X'_2$ (en unité de $\sigma'_2$)")
+  ax.set_xlabel(r"Projection sur $X'_1/\sigma'_1$")
+  ax.set_ylabel(r"Projection sur $X'_2/\sigma'_2$")
   #ax.set_zlabel(r"Projection sur $X'_3$ (en unité de $\sigma'_3$)")
   # ax.set_title('Projections de chaque individu sur les 3\n premières composantes principales')
 
@@ -466,8 +466,8 @@ def plot_DATA_2D_with_clustering(DATA, nb_clusters, verbose=None):
 
     plt.scatter(l_x, l_y,cmap="viridis", marker=markerslist[k], label="Group "+markerslist[k])
 
-  ax.set_xlabel(r"Projection sur $X'_1$ (en unité de $\sigma'_1$)")
-  ax.set_ylabel(r"Projection sur $X'_2$ (en unité de $\sigma'_2$)")
+  ax.set_xlabel(r"Projection sur $X'_1/\sigma'_1$")
+  ax.set_ylabel(r"Projection sur $X'_2/\sigma'_2$")
   plt.legend()
   plt.show()
 
@@ -504,8 +504,8 @@ def plot_DATA_2D_in_clusters(DATA, labels):
 
     plt.scatter(l_x, l_y,cmap="viridis", marker="+",label="Groupe "+markerslist[k], color = cols[k]) #,edgecolor='black', linewidth='3')
 
-  plt.gca().set_xlabel(r"Projection sur $X'_1$ (en unité de $\sigma'_1$)")
-  plt.gca().set_ylabel(r"Projection sur $X'_2$ (en unité de $\sigma'_2$)")
+  plt.gca().set_xlabel(r"Projection sur $X'_1/\sigma'_1$")
+  plt.gca().set_ylabel(r"Projection sur $X'_2/\sigma'_2$")
   plt.legend()
 
 def print_names_in_cluster(DATA, labels, names):
