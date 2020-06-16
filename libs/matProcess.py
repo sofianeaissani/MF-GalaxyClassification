@@ -43,7 +43,8 @@ def build_data_matrix(images_path, max_iter=300):
       image_file = images_path + "/" + v
 
       data_fonctionnelles = get_image(image_file)[0]
-      #data_fonctionnelles = second_inflexion_point(data_fonctionnelles)
+      data_fonctionnelles = second_inflexion_point(data_fonctionnelles)
+
       #data_fonctionnelles = cool_range(data_fonctionnelles)
       #data_fonctionnelles = smooth_file(data_fonctionnelles, 2)
       #data_fonctionnelles = contrastLinear(data_fonctionnelles[0], 10**4)
@@ -190,7 +191,7 @@ def plot_DATA_2D(DATA,inside_pol = None):
   plt.grid()
   plt.title('Projections de chaque individu sur les 2\n premières composantes principales')
   plt.xlabel(r"Projection sur $X'_1/\sigma'_1$")
-  plt.ylabel(r"Projection sur $X'_2/\sigma'_1$")
+  plt.ylabel(r"Projection sur $X'_2/\sigma'_2$")
 
   plt.show()
 
@@ -322,7 +323,7 @@ def extract_galaxies_data(csv_file):
       temp = line.split(",")
       temp[-1] = temp[-1].replace("\n", "")
       dico = {}
-      key_name = temp[0]+"_"+temp[1]
+      key_name = temp[0].replace(".", "p") +"_"+temp[1].replace(".", "p")
       for j,v in enumerate(keys):
         dico[v] = float(temp[j])
       final[key_name] = dico
@@ -333,7 +334,7 @@ def key_name(galaxy_file):
   return temp[1] + "_" + temp[2]
 
 
-def build_data_matrix2(images_path, max_iter=300):
+def build_data_matrix2(images_path, max_iter=1000):
   """ Construit la matrice de données DATA contenant toutes les observations (MF sans CAS) de tous les individus
   - Entrée : chemin relatif vers le dossier contenant toutes les images
   - Sortie : matrice DATA au format n*p avec n le nombre d'individus et p le nombre de variables """ 
@@ -344,7 +345,7 @@ def build_data_matrix2(images_path, max_iter=300):
   list_of_names = []
   
   for i,v in enumerate(images_list):
-    name = v.split(".")[0 ]
+    name = v.split(".")[0]
     ext = v[-4:]
     print('index :', i)
     print('name :', name)
@@ -357,6 +358,7 @@ def build_data_matrix2(images_path, max_iter=300):
       image_file = images_path + "/" + v
 
       data_fonctionnelles = get_image(image_file)[0]
+      data_fonctionnelles = second_inflexion_point(data_fonctionnelles)
       #data_fonctionnelles = smooth_file(data_fonctionnelles, 2)
 
       F,U,Chi = calcul_fonctionelles(data_fonctionnelles, 256)
@@ -520,18 +522,23 @@ def print_names_in_cluster(DATA, labels, names):
     print("Cluster n0:"  +str(j))
     for v in out[j]:
       print("  " + str(v))
+  
+  return out
     
-def show_images_from_names(names, folder, n):
+def show_images_from_names(names, folder, n, ext="fits", title=None):
   iterm = min(len(names), n*n)
   curi = 0
   size_window = [7, 7]
   fig = plt.figure(figsize = (*size_window,))
 
+  if title!=None:
+    plt.title(title)
+
   for i in range(iterm):
     v = names[i]
     try:
       print(v)
-      img = get_image(folder + "/" + v)[0]
+      img = get_image(folder + "/" + v + "." + ext)[0]
     except Exception as e:
       pass
     else:
@@ -540,5 +547,4 @@ def show_images_from_names(names, folder, n):
       plt.imshow(img, cmap="viridis")
     
   plt.tight_layout()
-
   plt.show()

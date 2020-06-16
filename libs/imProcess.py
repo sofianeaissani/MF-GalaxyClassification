@@ -229,9 +229,8 @@ def second_inflexion_point(file1):
   while secondSmooth[threshold+1] < 0:
     threshold += 1
 
-  print(threshold)
-
   file2 = file1.copy()
   file2[file2 < threshold] = threshold
+  file2 = file2 - threshold
 
   return file2
