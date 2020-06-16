@@ -2,9 +2,9 @@ import os,sys,argparse
 import numpy as np
 import scipy.linalg
 
-from libs.pic_process import *
-from libs.minkos import *
-from libs.matrices3 import *
+from libs.imProcess import *
+from libs.MF import *
+from libs.matProcess import *
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -33,14 +33,14 @@ def main():
   global args
   
   if args.load:
-    DATA = np.load(args.load)
-    names = np.load(args.load+"_names.npy")
+    DATA = np.load('npy/'+args.load+'.npy')
+    names = np.load('npy/'+args.load+"_names.npy")
   else:
     replace_special_characters(args.images_path)
     DATA,names = build_data_matrix2(args.images_path,900)
     if args.save:
-        np.save(args.save, DATA)
-        np.save(args.save+"_names", names)
+        np.save('npy/'+args.save+'.npy', DATA)
+        np.save('npy/'+args.save+"_names.npy", names)
 
   if args.process:   
     print("DATA is real :", np.all(DATA == np.real(DATA)))
@@ -53,7 +53,7 @@ def main():
     print('shape vecteurs propres :', espp.shape)
     print('somme des vp :', np.sum(valp), "pourcentage des 3 premieres :", sorted_valp[0][1] + sorted_valp[1][1] + sorted_valp[2][1])
     #print('tableau des vp :', valp)
-    new_DATA = compute_new_data_matrix(DATA, espp, valp, 8)
+    new_DATA = compute_new_data_matrix(DATA, espp, valp, 25)
     print('shape new_DATA :', new_DATA.shape)
     #Nb_Cl = [i for i in range(2, 27)]
     #Inertia = []
@@ -64,8 +64,10 @@ def main():
     #plt.ylabel("Inertie")
     #plt.show()
     labels, inertia = get_DATA_2D_in_clusters(new_DATA, 5)
-    print_names_in_cluster(new_DATA, labels, names)
     plot_DATA_2D_in_clusters(new_DATA, labels)
+    clustersdict = print_names_in_cluster(new_DATA, labels, names)
+    for k in clustersdict.keys():
+      show_images_from_names(clustersdict[k], "data/dataset1_z075-100_M214", 4, title="Groupe "+str(k))
 
 
 if __name__ == "__main__":

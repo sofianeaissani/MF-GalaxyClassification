@@ -2,9 +2,9 @@ import os,sys,argparse
 import numpy as np
 import scipy.linalg
 
-from libs.pic_process import *
-from libs.minkos import *
-from libs.matrices3 import *
+from libs.imProcess import *
+from libs.MF import *
+from libs.matProcess import *
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -51,7 +51,7 @@ def main():
     print('shape vecteurs propres :', espp.shape)
     print('somme des vp :', np.sum(valp), "pourcentage des 3 premieres :", sorted_valp[0][1] + sorted_valp[1][1] + sorted_valp[2][1])
     #print('tableau des vp :', valp)
-    #eigenvalues_plot(valp, 25)
+    eigenvalues_plot(valp, 25)
     new_DATA = compute_new_data_matrix(DATA, espp, valp, 25)
     plot_DATA_2D(new_DATA)
     print('shape new_DATA :', new_DATA.shape)
