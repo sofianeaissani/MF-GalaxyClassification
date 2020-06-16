@@ -33,12 +33,12 @@ def main():
   global args
   
   if args.load:
-    DATA = np.load(args.load)
+    DATA = np.load('npy/'+args.load+'.npy')
   else:
     replace_special_characters(args.images_path)
     DATA = build_data_matrix(args.images_path,900)
     if args.save:
-        np.save(args.save, DATA)
+        np.save('npy/'+args.save+'.npy', DATA)
 
   if args.process:   
     print("DATA is real :", np.all(DATA == np.real(DATA)))
