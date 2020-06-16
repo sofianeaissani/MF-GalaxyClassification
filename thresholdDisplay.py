@@ -5,7 +5,8 @@ import numpy as np
 from scipy import ndimage, misc
 import imageio
 
-a = get_image("1_TESTS_FANCY/NGC1300_HAWK-I-r+g+b.dat")[0]
+a = get_image("data/dataset1_z075-100_M214/0005_149p971429482882_1p6524724303036218_acs_I_mosaic_30mas_sci.fits")[0]
+a = second_inflexion_point(a)
 NUMAX = np.max(a)
 NUMIN = np.min(a)
 
@@ -15,10 +16,10 @@ d = a.copy()
 e = a.copy()
 
 a_ = a >= NUMIN
-b = b >= (NUMAX-NUMIN)/4
-c = c >= 2*(NUMAX-NUMIN)/4
-d = d >= 3*(NUMAX-NUMIN)/4
-e = e >= 10000000000000000
+b = b >= 2*(NUMAX-NUMIN)/6
+c = c >= 3*(NUMAX-NUMIN)/6
+d = d >= 4*(NUMAX-NUMIN)/6
+e = e >= 5*(NUMAX-NUMIN)/6
 
 ### Plotting
 

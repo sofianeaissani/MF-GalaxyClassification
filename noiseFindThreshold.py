@@ -41,15 +41,16 @@ def main(myFile):
 
     fig.add_subplot(132)
     #plt.plot(threshold, NbOccurs, color="lightblue")
-    plt.plot(threshold, NbOccursSmooth, color="blue")
+    plt.plot(threshold, NbOccursSmooth, color="blue", label=r"$N(I)$")
     #plt.plot(threshold, accroiss, color="yellow")
-    plt.plot(threshold, accroissSmooth, color="gold")
+    plt.plot(threshold, accroissSmooth, color="gold", label=r"$\frac{dN(I)}{dI}$")
     #plt.plot(threshold, second, color="orange")
-    plt.plot(threshold, secondSmooth, color="red")
-    plt.title("Histogramme des occurrences")
+    plt.plot(threshold, secondSmooth, color="red", label=r"$\frac{d^2N(I)}{dI^2}$")
+    plt.title("Histogramme d'intensité")
     plt.grid()
-    plt.xlabel(r"Seuil $\nu$")
-    plt.ylabel(r"Nombre d'occurences")
+    plt.legend()
+    plt.xlabel(r"Intensité $I$")
+    plt.ylabel(r"Fréquence $N(I)$")
 
     # Trouver une approximation grossière du deuxième point d'inflexion
 
@@ -60,7 +61,8 @@ def main(myFile):
     print(threshold)
 
     file2 = file1.copy()
-    file2[file2 < threshold] = 0
+    file2[file2 < threshold] = threshold
+    file2 -= threshold
 
     fig.add_subplot(133)
     plt.imshow(file2, cmap="viridis")
