@@ -37,8 +37,10 @@ def main(myFile):
 
     x = np.linspace(0.0, max_lin, 100)
 
-    #file1, name, ext = get_image(myFile)
-    file1, name = charger_fichier_A(myFile)
+    file1, name, ext = get_image(myFile)
+    #file1, name = charger_fichier_A(myFile)
+    
+    file1 = second_inflexion_point(file1)
     print("Processing", name, "...")
 
     if args.smooth:
@@ -116,20 +118,14 @@ def main(myFile):
 
 def show_threshold(ax, img, threshold):
     ax.cla()
-    michel = supra_boucle(img, threshold)
+    binarized = binarize(img, threshold)
     ax.set_title("Threshold - " + str(round(threshold)))
-    ax.imshow(michel, cmap="viridis")
+    ax.imshow(binarized, cmap="viridis")
 
 
-def supra_boucle(file1, threshold):
+def binarize(file1, threshold):
     file1 = np.copy(file1)
-    for i in range(len(file1)):
-        for j in range(len(file1[i])):
-            pix = file1[i][j]
-            if pix > threshold:
-                file1[i][j] = 1
-            else:
-                file1[i][j] = 0
+    file1 = file1 >= threshold
     return file1
 
 

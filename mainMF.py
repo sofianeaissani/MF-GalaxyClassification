@@ -23,25 +23,22 @@ def main(myFile):
     file1, name, ext = get_image(myFile)
     name = name[:20]
 
-    # ci-dessous : tentative d'éliminer le bruit avant le calcul des mf
-    #file1 = second_inflexion_point(file1)
-    #file1 = cool_range(file1)
+    # Noise reduction
+    file1 = second_inflexion_point(file1)
 
-        
-    # Tronquer la fonction à args.max  
-    max_lin = 40
+    # Scale on the nu axis
+    max_nu = 255
     if type(args.max) == int:
-        max_lin = args.max
+        max_nu = args.max
 
-    # Lissage de la fonction
+    # Smoothing the image before computing MF
     if args.smooth:
         file1 = smooth_file(file1, args.smooth)
 
-    # Calcul des fonctionnelles
-    F, U, Chi = calcul_fonctionelles(file1, max_lin)
+    # MF computing
+    F, U, Chi = calcul_fonctionelles(file1, max_nu)
 
-    # Visuels
-    
+    # Graphics
     size_window = [8,5]
 
     fig = plt.figure(figsize = (*size_window,))
@@ -52,7 +49,7 @@ def main(myFile):
     plt.colorbar()
 
     fig.add_subplot(122)
-    x = np.linspace(0.0, max_lin, 100)
+    x = np.linspace(0.0, max_nu, 150)
     a,b,c = 1,1,1
     if args.normalize:
         a = coef_normalization_functional(F)
@@ -85,12 +82,10 @@ def init_args():
 
     parser = argparse.ArgumentParser(description='TakeMeOn')
     parser.add_argument("file", help='file in format FITS or DAT', type=str)
-    parser.add_argument("-s", "--save", help="save at the specified path (no showing)", type=str)
-    parser.add_argument("-cL", "--contrastLinear", help="multiply contrast by x", type = float, default=40)
-    parser.add_argument("-m", dest="max", help="maximum of the linear space", type = int)
+    parser.add_argument("-s", "--save", help="save at the specified path without showing", type=str)
+    parser.add_argument("-m", dest="max", help="maximum of the nu axis", type = int)
     parser.add_argument("-n", "--normalize", action="store_true", help="normalize the curves")
-    parser.add_argument("-dat", "--dat", action="store_true", help="Force the DAT format processing")
-    parser.add_argument("-smooth", "--smooth", type = int, help="smooth", default=0)
+    parser.add_argument("-smooth", "--smooth", type = int, help="smooth level of the image", default=0)
     args = parser.parse_args()
 
     args.fantom = True
