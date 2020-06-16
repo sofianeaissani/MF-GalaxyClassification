@@ -6,6 +6,7 @@ from libs.imProcess import *
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 from sklearn.cluster import KMeans
+from random import shuffle
 
 
 def replace_special_characters(path):
@@ -153,9 +154,13 @@ def eigenvalues_plot(valeursPropres, n):
     total += val[1]
     x += [j+1]
     y += [total]
-  ax.bar(x,y)
+  ax.scatter(x,y, marker=".", color="black")
+  ax.plot(x,y, color="black")
+  for j in range(len(valeursPropres)):
+    plt.annotate(str(round(valeursPropres[j][1], 4)), xy=(j+0.5, y[j]), xytext=(j+0.5, y[j]+0.02), size=6)
+  ax.bar(x,y, color="moccasin")
   plt.xlabel(r"Nombre de composantes principales $i$")
-  plt.ylabel(r"Fraction de variance expliquée $\delta_i/tr(\Delta)$")
+  plt.ylabel(r"Fraction de variance expliquée $\Sigma\delta_i/tr(\Delta)$")
   plt.show()
 
 
@@ -525,17 +530,22 @@ def print_names_in_cluster(DATA, labels, names):
   
   return out
     
-def show_images_from_names(names, folder, n, ext="fits", title=None):
+def show_images_from_names(names, folder, csvfile, n, ext="fits", title=None):
+  shuffle(names)
   iterm = min(len(names), n*n)
+  info = extract_galaxies_data(csvfile)
   curi = 0
-  size_window = [7, 7]
+  size_window = [7, 8]
   fig = plt.figure(figsize = (*size_window,))
 
   if title!=None:
-    plt.title(title)
+    plt.suptitle(title)
 
   for i in range(iterm):
     v = names[i]
+    key = key_name(v)
+    z = info[str(key)]['PHOTOZ']
+    M = info[str(key)]['ip_MAG_AUTO']
     try:
       print(v)
       img = get_image(folder + "/" + v + "." + ext)[0]
@@ -544,7 +554,8 @@ def show_images_from_names(names, folder, n, ext="fits", title=None):
     else:
       curi += 1
       plt.subplot(n,n, curi)
-      plt.imshow(img, cmap="viridis")
+      plt.imshow(img, cmap="Greys")
+      plt.annotate("z = "+str(z)+"\nM = "+str(M), xy=(10,35), xytext=(10,35), size=6)
     
   plt.tight_layout()
   plt.show()
