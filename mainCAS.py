@@ -10,22 +10,14 @@ import argparse
 import os,sys
 # %matplotlib inline
 
+from libs.imProcess import get_image, normalize
 
-def normalize(image):
-        m, M = np.min(image), np.max(image)
-        return (image-m) / (M-m)
-
-
-def morpho(myFile, gain):
+def computeCAS(myFile, gain):
 
     global args
 
     ##### Load the image
-    image = np.loadtxt(myFile) 
-    image = np.float64(image)
-    
-    ##### ??
-    log_stretch = LogStretch(a=10000.0)
+    image = get_image(myFile)
 
     ##### Normalize the image
     image = normalize(image)
@@ -151,4 +143,4 @@ def init_args():
 
 if __name__ == "__main__":
     init_args()
-    morpho(args.file, args.gain)
+    computeCAS(args.file, args.gain)

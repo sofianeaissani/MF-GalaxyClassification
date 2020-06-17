@@ -108,8 +108,8 @@ def get_image(path, override=""):
       file1 = get_dat_file(path)
     elif ext == "fits":
       file1 = get_fit_file(path)
-      file1 = fantom(file1)
-  file1 = cool_range(file1)
+      #file1 = fantom(file1)
+
   return file1,name,ext
 
 def degrade(file1, val):
@@ -134,7 +134,6 @@ def degradePIL(file1, val):
     img2 = np.float64(img2)
     return img2
 
-
 def pepper_and_salt(file2, pourcentage):
     file1 = file2.copy()
     for i in range(len(file1)):
@@ -147,7 +146,6 @@ def pepper_and_salt(file2, pourcentage):
                 elif lenombrealeatoire == 1:
                     file1[i][j] = 255
     return file1
-
 
 def adaptive_poisson_noise(img, coef, truncate=False): 
   noise_mask = np.random.poisson(img*coef)/coef # example : coef = 1
@@ -234,3 +232,7 @@ def second_inflexion_point(file1):
   file2 = file2 - threshold
 
   return file2
+
+def normalize(image):
+        m, M = np.min(image), np.max(image)
+        return (image-m) / (M-m)
