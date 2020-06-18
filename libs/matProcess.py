@@ -3,10 +3,16 @@ import scipy.linalg
 import os,sys
 from libs.MF import *
 from libs.imProcess import *
+from libs.phyProcess import *
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 from sklearn.cluster import KMeans
 from random import shuffle
+
+
+from matplotlib import colors
+import matplotlib.pylab as plb
+import matplotlib as mpl
 
 
 def replace_special_characters(path):
@@ -21,7 +27,6 @@ def replace_special_characters(path):
     else:
       n_name = i
     os.rename(path+'/' + i,path+'/'+ n_name+'.'+ext)
-
 
 def build_data_matrix(images_path, max_iter=300):
   """ Construit la matrice de données DATA contenant toutes les observations (MF sans CAS) de tous les individus
@@ -67,7 +72,6 @@ def build_data_matrix(images_path, max_iter=300):
 
   return DATA
 
-
 def normaliser2(func):
   a = np.min(func)
   func = func - a
@@ -104,7 +108,6 @@ def reduction(m):
       
   return matrix.T
 
-
 def process_matrix(DATA):
   """ Calcule les valeurs et vecteurs propres correspondant aux composantes principales de DATA.
   - Entrée : matrice initiale DATA au format n*p avec n le nombre d'individus et p le nombre de variables
@@ -118,7 +121,6 @@ def process_matrix(DATA):
   val_et_espaces = scipy.linalg.eigh(matrice_correlation)
 
   return val_et_espaces     # pas forcément dans l'ordre souhaité
-
 
 def sort_eigenvalues(valeursPropres):
   """ Rend les valeurs propres triées par ordre décroissant. 
@@ -135,7 +137,6 @@ def sort_eigenvalues(valeursPropres):
   supertuples.sort(reverse=True)
 
   return supertuples
-
 
 def eigenvalues_plot(valeursPropres, n):
   """ Affiche la fonction de cumul des variances des n valeurs propres les plus importantes de valeursPropres 
@@ -157,13 +158,11 @@ def eigenvalues_plot(valeursPropres, n):
   ax.scatter(x,y, marker=".", color="black")
   ax.plot(x,y, color="black")
   for j in range(len(valeursPropres)):
-    plt.annotate(str(round(valeursPropres[j][1], 4)), xy=(j+0.5, y[j]), xytext=(j+0.5, y[j]+0.02), size=6)
+    plt.annotate(str(round(valeursPropres[j][1], 4)*100)+"%", xy=(j+0.5, y[j]), xytext=(j+0.5, y[j]+0.02), size=6)
   ax.bar(x,y, color="moccasin")
   plt.xlabel(r"Nombre de composantes principales $i$")
   plt.ylabel(r"Fraction de variance expliquée $\Sigma\delta_i/tr(\Delta)$")
   plt.show()
-
-
 
 def compute_new_data_matrix(DATA, espp, valeursPropres, n):
   """ Calcule la nouvelle matrice de données évaluant chaque individu selon les nouvelles variables.\n
@@ -239,10 +238,6 @@ def plot_DATA_3D(DATA):
 
   plt.show()
 
-from matplotlib import colors
-import matplotlib.pylab as plb
-import matplotlib as mpl
-
 def plot_DATA_3D_in_2D(DATA):
   """ Affiche la projection des individus dans l'espace des 3 variables d'inertie maximale. """
   size_window = [5, 5]
@@ -315,30 +310,6 @@ def is_in_polygon(x,y,pol):
   grid = p.contains_points(points)
   return grid
 
-
-def extract_galaxies_data(csv_file):
-  file1 = open(csv_file)
-  keys = []
-  final = {}
-  for i,line in enumerate(file1):
-    if i == 0:
-      keys = line.split(",")
-      keys[-1] = keys[-1].replace("\n", "")
-    else:
-      temp = line.split(",")
-      temp[-1] = temp[-1].replace("\n", "")
-      dico = {}
-      key_name = temp[0].replace(".", "p") +"_"+temp[1].replace(".", "p")
-      for j,v in enumerate(keys):
-        dico[v] = float(temp[j])
-      final[key_name] = dico
-  return final
-
-def key_name(galaxy_file):
-  temp = galaxy_file.split("_")
-  return temp[1] + "_" + temp[2]
-
-
 def build_data_matrix2(images_path, max_iter=1000):
   """ Construit la matrice de données DATA contenant toutes les observations (MF sans CAS) de tous les individus
   - Entrée : chemin relatif vers le dossier contenant toutes les images
@@ -373,38 +344,6 @@ def build_data_matrix2(images_path, max_iter=1000):
       U = normaliser(U)
       Chi = normaliser(Chi)
 
-      N = np.hstack((F,U,Chi))
-
-      if initial:
-        DATA = N
-        initial = False
-      else:
-        DATA = np.vstack((DATA, N))
-
-  return DATA,list_of_names
-
-def build_data_matrix3(list_of_images, max_iter=300):
-  """ Construit la matrice de données DATA contenant toutes les observations (MF sans CAS) de tous les individus
-  - Entrée : chemin relatif vers le dossier contenant toutes les images
-  - Sortie : matrice DATA au format n*p avec n le nombre d'individus et p le nombre de variables """ 
-
-  initial = True
-
-  list_of_names = []
-  
-  for i,v in enumerate(list_of_images):
-
-    if i > max_iter:
-      break
-    if True:
-      list_of_names += [str(i)]
-      print("Fichier trouvé, en cours de process")
-
-      data_fonctionnelles = v
-      data_fonctionnelles = contrastLinear(data_fonctionnelles, 100)
-
-      F,U,Chi = calcul_fonctionelles(data_fonctionnelles, 256)
-      F,U,Chi = np.array(F), np.array(U), np.array(Chi)
       N = np.hstack((F,U,Chi))
 
       if initial:
@@ -478,7 +417,6 @@ def plot_DATA_2D_with_clustering(DATA, nb_clusters, verbose=None):
   plt.legend()
   plt.show()
 
-
 def get_DATA_2D_in_clusters(DATA, nb_clusters, verbose=None):
   """ Affiche la projection des individus dans l'espace des 3 variables d'inertie maximale avec clustering. """
   if nb_clusters > 26:
@@ -523,17 +461,16 @@ def print_names_in_cluster(DATA, labels, names):
       out[v] = []
     out[v] += [names[i]]
 
-  for j in out.keys():
+  """for j in out.keys():
     print("Cluster n0:"  +str(j))
     for v in out[j]:
-      print("  " + str(v))
+      print("  " + str(v))"""
   
   return out
     
-def show_images_from_names(names, folder, csvfile, n, ext="fits", title=None):
+def show_images_from_names(names, folder, physicsdict, n, ext="fits", title=None, p=5):
   shuffle(names)
   iterm = min(len(names), n*n)
-  info = extract_galaxies_data(csvfile)
   curi = 0
   size_window = [7, 8]
   fig = plt.figure(figsize = (*size_window,))
@@ -544,18 +481,24 @@ def show_images_from_names(names, folder, csvfile, n, ext="fits", title=None):
   for i in range(iterm):
     v = names[i]
     key = key_name(v)
-    z = info[str(key)]['PHOTOZ']
-    M = info[str(key)]['ip_MAG_AUTO']
+    z = physicsdict[str(key)]['PHOTOZ']
+    M = physicsdict[str(key)]['ip_MAG_AUTO']
+    F_R = physicsdict[str(key)]['FLUX_RADIUS']
     try:
-      print(v)
+      #print(v)
       img = get_image(folder + "/" + v + "." + ext)[0]
     except Exception as e:
       pass
     else:
       curi += 1
       plt.subplot(n,n, curi)
-      plt.imshow(img, cmap="Greys")
-      plt.annotate("z = "+str(z)+"\nM = "+str(M), xy=(10,35), xytext=(10,35), size=6)
+      plt.imshow(img, cmap="viridis")
+      plt.annotate("z = "+str(z)+"\nM = "+str(M)+"\nF_R = "+str(F_R), xy=(10,55), xytext=(10,55), size=6, color='white')
+      Center_of_Mass = scipy.ndimage.measurements.center_of_mass(img)
+      formatted_CoM = Center_of_Mass[::-1]
+      circle = plt.Circle(formatted_CoM, radius=p*F_R, fill=False, color="red")
+      ax = fig.gca()
+      ax.add_artist(circle)
     
   plt.tight_layout()
   plt.show()
