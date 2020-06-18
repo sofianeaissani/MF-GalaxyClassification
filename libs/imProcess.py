@@ -9,63 +9,48 @@ from random import *
 from copy import copy
 from PIL import Image
 
+from libs.phyProcess import key_name
 
 
-def contrast(file1):
+def remove_fantom_pixels(img): #### TO BE MODIFIED
   """
-    A ne pas utiliser pour le moment, on doit trouver une meilleure fonction mathématique
-  """
-  return file1
-  """file1 = np.float64(file1)
-  file1 = ((file1 - 128) / 128) * (np.pi / 2)
-  file1 = 1*np.tanh(file1) + 1
-  file1 = (file1 * 128) / 1
-  return file1"""
-
-def contrastLinear(file1, value):
-  file1 = value*file1
-  return file1
-
-
-def fantom(file1):
-  """
-    Enlève les pixels fantomes créés par le crop de ds9
+    Removes all NaN pixels from the image
   """
   file2 = []
-  for i in range(len(file1)):
+  for i in range(len(img)):
       file3 = []
-      for c in range(len(file1[i])):
-          if not np.isnan(file1[i][c]):
-              file3 += [file1[i][c]]
+      for c in range(len(img[i])):
+          if not np.isnan(img[i][c]):
+              file3 += [img[i][c]]
       if file3 != []:
           file2 += [file3]
   file2 = np.float64(file2)
   return file2
 
-def smooth_file(file1, size_gauss):
+def smooth_img(img, size_gauss):
   """
-    Lisse une image avec une matrice gaussiene
+    Smoothes the image by convolution with a gaussian kernel
   """
   kernel = Gaussian2DKernel(size_gauss)
-  file1 = scipy_convolve(file1, kernel, mode='same', method='direct')
-  return file1
+  img = scipy_convolve(img, kernel, mode='same', method='direct')
+  return img
 
-def get_dat_file(name):
+def get_dat_file(myFile):
   """ A 'dat' file is here simply a matrix encoded in a file """ 
-  file1 = np.loadtxt(name)
-  file1 = np.float64(file1)
-  return file1
+  file1 = np.loadtxt(myFile)
+  img = np.float64(file1)
+  return img
 
-def get_fit_file(name):
-  file1 = fits.getdata(name)
-  file1 = np.float64(file1)
-  return file1
+def get_fits_file(myFile):
+  file1 = fits.getdata(myFile)
+  img = np.float64(file1)
+  return img
 
-def charger_fichier_A(path):
+def get_dat_file2(myFile): #### TO BE MODIFIED
   """ Charge les agréables fichiers de Carlo qui sont sous la forme de plusieurs colonnes """
 
   matrix = []
-  file_r = open(path, "r")
+  file_r = open(myFile, "r")
 
   for line in file_r:
     temp = line.split()
@@ -79,14 +64,14 @@ def charger_fichier_A(path):
           matrix[y].append([])
         matrix[y][x] = v
   matrix = np.float64(matrix)
-  name = path.split("/")[-1].split(".")[0]
+  name = myFile.split("/")[-1].split(".")[0]
   return matrix, name
 
-def get_image(path, override=""):
+def get_image(myFile, override=""):
   """
-    Obtenir une image en format np-array-64, son nom et son extension
+    Imports an image, its name and its extension from the given path
   """
-  name = path.split("/")
+  name = myFile.split("/")
   name = name[-1]
   ext = ""
 
@@ -99,18 +84,51 @@ def get_image(path, override=""):
   # Récupérer le fichier
   if override:
     if override == "A":
-      file1,name = charger_fichier_A(path)
+      img, name = get_dat_file2(myFile)
       ext = ""
     else:
       pass
   else:
     if ext == "dat":
-      file1 = get_dat_file(path)
+      img = get_dat_file(myFile)
     elif ext == "fits":
-      file1 = get_fit_file(path)
-      #file1 = fantom(file1)
+      img = get_fits_file(myFile)
+      #img = remove_fantom_pixels(img)
 
-  return file1,name,ext
+  return img,name,ext
+
+def get_image_and_properties(myFile, DICT, override=""):
+  """
+    Imports an image, its name, its extension and its properties from the given path
+  """
+  name = myFile.split("/")
+  name = name[-1]
+  ext = ""
+
+  if "." in name:
+    name = name.split(".")
+    ext = name[-1]
+    name = name[-2]
+
+
+  # Récupérer le fichier
+  if override:
+    if override == "A":
+      img, name = get_dat_file2(myFile)
+      ext = ""
+    else:
+      pass
+  else:
+    if ext == "dat":
+      img = get_dat_file(myFile)
+    elif ext == "fits":
+      img = get_fits_file(myFile)
+      #img = remove_fantom_pixels(img)
+
+  key = key_name(myFile)
+  properties = DICT[key]
+
+  return img,name,ext,properties
 
 def degrade(file1, val):
     """ Dégrade la qualité d'une image en diminuant son nombre de pixels, val est le facteur de division """
@@ -124,7 +142,7 @@ def degrade(file1, val):
             img2[i] += [moyenne]
     img2 = np.float64(img2)
     return img2
-  
+
 def degradePIL(file1, val):
     """ Dégrade la qualité d'une image en diminuant son nombre de pixels, val est le facteur de division """
     assert type(val) == int
