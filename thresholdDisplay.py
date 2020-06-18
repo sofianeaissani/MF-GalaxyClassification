@@ -8,7 +8,7 @@ import imageio
 a = get_image("data/dataset1_z075-100_M214/0005_149p971429482882_1p6524724303036218_acs_I_mosaic_30mas_sci.fits")[0]
 NUMAX = np.max(a)
 NUMIN = np.min(a)
-print(NUMIN, NUMAX)
+print("min :", NUMIN, "max :", NUMAX)
 
 b = a.copy()
 c = a.copy()

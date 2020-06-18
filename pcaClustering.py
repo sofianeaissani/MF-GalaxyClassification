@@ -5,6 +5,7 @@ import scipy.linalg
 from libs.imProcess import *
 from libs.MF import *
 from libs.matProcess import *
+from libs.phyProcess import *
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -79,9 +80,11 @@ def main():
     plot_DATA_2D_in_clusters(new_DATA, labels)
     plt.show()
 
+    physicsdict = extract_galaxies_data("data/dataset1_z075-100_M214/dataset1_z075-100_M214")
     clustersdict = print_names_in_cluster(new_DATA, labels, names)
+    export_groups_to_TOPCAT(clustersdict, physicsdict, "data/dataset1_z075-100_M214/output/output")
     for k in clustersdict.keys():
-      show_images_from_names(clustersdict[k], "data/dataset1_z075-100_M214", "data/dataset1_z075-100_M214/dataset1_z075-100_M214", 4, title="Groupe "+markerslist[k])
+      show_images_from_names(clustersdict[k], "data/dataset1_z075-100_M214", physicsdict, 4, title="Groupe "+markerslist[k])
 
 
     """if True:
