@@ -28,7 +28,7 @@ def replace_special_characters(path):
       n_name = i
     os.rename(path+'/' + i,path+'/'+ n_name+'.'+ext)
 
-def build_data_matrix(images_path, max_iter=300):
+def build_data_matrix(images_path, max_iter=1000):
   """ Construit la matrice de données DATA contenant toutes les observations (MF sans CAS) de tous les individus
   - Entrée : chemin relatif vers le dossier contenant toutes les images
   - Sortie : matrice DATA au format n*p avec n le nombre d'individus et p le nombre de variables """ 
@@ -45,7 +45,7 @@ def build_data_matrix(images_path, max_iter=300):
     if i > max_iter:
       break
     if ext=="fits" or ext==".dat":
-      print("Fichier trouvé, en cours de process")  
+      print("File found, processing...")  
       image_file = images_path + "/" + v
 
       data_fonctionnelles = get_image(image_file)[0]
@@ -158,7 +158,7 @@ def eigenvalues_plot(valeursPropres, n):
   ax.scatter(x,y, marker=".", color="black")
   ax.plot(x,y, color="black")
   for j in range(len(valeursPropres)):
-    plt.annotate(str(round(valeursPropres[j][1], 4)*100)+"%", xy=(j+0.5, y[j]), xytext=(j+0.5, y[j]+0.02), size=6)
+    plt.annotate(str(round(valeursPropres[j][1]*100, 2))+"%", xy=(j+0.5, y[j]), xytext=(j+0.5, y[j]+0.02), size=6)
   ax.bar(x,y, color="moccasin")
   plt.xlabel(r"Nombre de composantes principales $i$")
   plt.ylabel(r"Fraction de variance expliquée $\Sigma\delta_i/tr(\Delta)$")
@@ -310,17 +310,20 @@ def is_in_polygon(x,y,pol):
   grid = p.contains_points(points)
   return grid
 
-def build_data_matrix2(images_path, max_iter=1000):
+def build_data_matrix2(files_path, numberofpoints, n_sigma=3, max_iter=1000):
   """ Construit la matrice de données DATA contenant toutes les observations (MF sans CAS) de tous les individus
   - Entrée : chemin relatif vers le dossier contenant toutes les images
   - Sortie : matrice DATA au format n*p avec n le nombre d'individus et p le nombre de variables """ 
 
   initial = True
 
-  images_list = os.listdir(images_path)
+  files_list = os.listdir(files_path)
   list_of_names = []
+  images_list = []
+  max_thresholds_list = []
+  min_thresholds_list = []
   
-  for i,v in enumerate(images_list):
+  for i,v in enumerate(files_list):
     name = v.split(".")[0]
     ext = v[-4:]
     print('index :', i)
@@ -330,27 +333,50 @@ def build_data_matrix2(images_path, max_iter=1000):
       break
     if ext=="fits" or ext==".dat":
       list_of_names += [name]
-      print("Fichier trouvé, en cours de process")
-      image_file = images_path + "/" + v
+      print("File found, processing...")
+      myFile = files_path + "/" + v
 
-      data_fonctionnelles = get_image(image_file)[0]
-      data_fonctionnelles = second_inflexion_point(data_fonctionnelles)
-      #data_fonctionnelles = smooth_file(data_fonctionnelles, 2)
+      img = get_image(myFile)[0]
+      #img = second_inflexion_point(img)
+      #img = smooth_file(img, 2)
 
-      F,U,Chi = calcul_fonctionelles(data_fonctionnelles, 256)
-      F,U,Chi = np.array(F), np.array(U), np.array(Chi)
+      images_list.append(img)
+      numax = np.max(img)
+      numin = np.min(img)
+      print("min : ", numin, ", max :", numax)
+      max_thresholds_list.append(numax)
+      min_thresholds_list.append(numin)
 
-      F = normaliser(F)
-      U = normaliser(U)
-      Chi = normaliser(Chi)
 
-      N = np.hstack((F,U,Chi))
+  max_threshold = np.max(max_thresholds_list)
+  mean_upper_threshold = np.mean(max_thresholds_list)
+  std_upper_threshold = np.std(max_thresholds_list)
+  min_threshold = np.min(min_thresholds_list)
+  mean_lower_threshold = np.mean(min_thresholds_list)
+  std_lower_threshold = np.std(min_thresholds_list)
+  
+  print("MIN of MIN :", min_threshold, ", MAX of MAX :", max_threshold)
+  print("Mean MIN :", mean_lower_threshold, ", STD :", std_lower_threshold)
+  print("Mean MAX :", mean_upper_threshold, ", STD :", std_upper_threshold)
 
-      if initial:
-        DATA = N
-        initial = False
-      else:
-        DATA = np.vstack((DATA, N))
+  
+  for i,img in enumerate(images_list):
+    F,U,Chi = calcul_fonctionelles(img, mean_lower_threshold-n_sigma*std_lower_threshold, mean_upper_threshold+n_sigma*std_upper_threshold, numberofpoints)
+    F,U,Chi = np.array(F), np.array(U), np.array(Chi)
+
+    F = normaliser(F)
+    U = normaliser(U)
+    Chi = normaliser(Chi)
+
+    N = np.hstack((F,U,Chi))
+
+    if initial:
+      DATA = N
+      initial = False
+    else:
+      DATA = np.vstack((DATA, N))
+      if i%100 == 0:
+        print("Building matrix :", i, "/", len(files_list))
 
   return DATA,list_of_names
 

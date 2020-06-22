@@ -1,12 +1,12 @@
 import numpy as np
 from minkfncts2d import MF2D
 
-def calcul_fonctionelles(file1, max_threshold, nb_points = 150):
+def calcul_fonctionelles(file1, min_threshold, max_threshold, nb_points = 150):
     """Source: https://github.com/cefarix/minkfncts2d , https://iopscience.iop.org/article/10.1088/1742-5468/2008/12/P12015 """
     F = []
     U = []
     Chi = []
-    for threshold in np.linspace(0.0, max_threshold, nb_points):
+    for threshold in np.linspace(min_threshold, max_threshold, nb_points):
         (f, u, chi) = MF2D(file1, threshold)
         F.append(f)
         U.append(u)
