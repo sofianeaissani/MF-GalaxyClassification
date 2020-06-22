@@ -1,6 +1,7 @@
 import sys
 import matplotlib.pyplot as plt
 from libs.imProcess import *
+from libs.MF import *
 import argparse
 import numpy as np
 from scipy import ndimage, misc
@@ -16,16 +17,26 @@ def main(myFile):
     NUMIN = np.min(a)
     print("min :", NUMIN, "max :", NUMAX)
 
-    b = a.copy()
+    """b = a.copy()
     c = a.copy()
     d = a.copy()
-    e = a.copy()
+    e = a.copy()"""
 
+    linearspace = np.linspace(NUMIN, NUMAX, 400)
+    F, U, Chi = calcul_fonctionelles(a, NUMIN, NUMAX, 400)
+    plt.plot(linearspace, F)
+    plt.plot(linearspace, U)
+    plt.plot(linearspace, Chi)
+    plt.show()
+
+"""
     a_ = a >= (NUMAX-NUMIN)/6
     b = b >= 2*(NUMAX-NUMIN)/6
     c = c >= 3*(NUMAX-NUMIN)/6
     d = d >= 4*(NUMAX-NUMIN)/6
     e = e >= 5*(NUMAX-NUMIN)/6
+
+
 
     ### Plotting
 
@@ -51,7 +62,7 @@ def main(myFile):
     fig.add_subplot(2,5,10)
     plt.imshow(e, cmap="binary")
 
-    plt.show()
+    plt.show()"""
 
 
 parser = ""
