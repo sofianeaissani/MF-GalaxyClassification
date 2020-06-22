@@ -38,7 +38,7 @@ def main():
 
   else:
     replace_special_characters(args.images_path)
-    DATA,names = build_data_matrix2(args.images_path,900)
+    DATA, names = build_data_matrix2(args.images_path, numberofpoints = 1000, n_sigma=3, max_iter=900)
     if args.save:
         np.save('npy/'+args.save+'.npy', DATA)
         np.save('npy/'+args.save+"_names.npy", names)
@@ -56,7 +56,7 @@ def main():
     print('somme des vp :', np.sum(valp), "pourcentage des 3 premieres :", sorted_valp[0][1] + sorted_valp[1][1] + sorted_valp[2][1])
 
     #print('tableau des vp :', valp)
-    #eigenvalues_plot(valp, 25)
+    eigenvalues_plot(valp, 25)
     new_DATA = compute_new_data_matrix(DATA, espp, valp, 25)
     print('shape new_DATA :', new_DATA.shape)
 
@@ -69,13 +69,6 @@ def main():
     plt.ylabel("Inertie")
     plt.show()"""
 
-    markerslist = [r"$\mathcal{A}$", r"$\mathcal{B}$", r"$\mathcal{C}$", r"$\mathcal{D}$", 
-  r"$\mathcal{E}$", r"$\mathcal{F}$", r"$\mathcal{G}$", r"$\mathcal{H}$", r"$\mathcal{I}$", 
-  r"$\mathcal{J}$", r"$\mathcal{K}$", r"$\mathcal{L}$", r"$\mathcal{M}$", r"$\mathcal{N}$",
-  r"$\mathcal{O}$", r"$\mathcal{P}$", r"$\mathcal{Q}$", r"$\mathcal{R}$", r"$\mathcal{S}$",
-  r"$\mathcal{T}$", r"$\mathcal{U}$", r"$\mathcal{V}$", r"$\mathcal{W}$", r"$\mathcal{X}$",
-  r"$\mathcal{Y}$", r"$\mathcal{Z}$"]
-
     labels, inertia = get_DATA_2D_in_clusters(new_DATA, 5)
     plot_DATA_2D_in_clusters(new_DATA, labels)
     plt.show()
@@ -84,10 +77,10 @@ def main():
     clustersdict = print_names_in_cluster(new_DATA, labels, names)
     #export_groups_to_TOPCAT(clustersdict, physicsdict, "data/dataset1_z075-100_M214/output/output")
     for k in clustersdict.keys():
-      show_images_from_names(clustersdict[k], "data/dataset1_z075-100_M214", physicsdict, 4, title="Groupe "+markerslist[k])
+      show_images_from_names(clustersdict[k], args.images_path, physicsdict, 4, title="Groupe "+r"$\mathcal{" + chr(65+k)+r"}$")
 
 
-    """if True:
+    if True:
       separ_DATA = {}
       for i, indiv in enumerate(DATA):
         v = labels[i]
@@ -120,7 +113,7 @@ def main():
     fig.add_subplot(1,4,1)
     plot_DATA_2D_in_clusters(new_DATA, labels)
     plt.tight_layout( )
-    plt.show()"""
+    plt.show()
 
 
 if __name__ == "__main__":
