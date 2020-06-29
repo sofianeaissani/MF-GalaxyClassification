@@ -324,6 +324,12 @@ def build_data_matrix2(files_path, numberofpoints, n_sigma=3, max_iter=1000):
   min_thresholds_list = []
   
   for i,v in enumerate(files_list):
+
+    path = os.path.join(files_path, v)
+    if os.path.isdir(path):
+        # skip directories
+        continue
+
     name = v.split(".")[0]
     ext = v[-4:]
     print('index :', i)
@@ -337,8 +343,8 @@ def build_data_matrix2(files_path, numberofpoints, n_sigma=3, max_iter=1000):
       myFile = files_path + "/" + v
 
       img = get_image(myFile)[0]
-      #img = second_inflexion_point(img)
-      #img = smooth_file(img, 2)
+      img = second_inflexion_point(img, 40)
+      #img = smooth_img(img, 2)
 
       images_list.append(img)
       numax = np.max(img)
@@ -364,9 +370,9 @@ def build_data_matrix2(files_path, numberofpoints, n_sigma=3, max_iter=1000):
     F,U,Chi = calcul_fonctionelles(img, mean_lower_threshold-n_sigma*std_lower_threshold, mean_upper_threshold+n_sigma*std_upper_threshold, numberofpoints)
     F,U,Chi = np.array(F), np.array(U), np.array(Chi)
 
-    F = normaliser(F)
-    U = normaliser(U)
-    Chi = normaliser(Chi)
+    #F = normaliser(F)
+    #U = normaliser(U)
+    #Chi = normaliser(Chi)
 
     N = np.hstack((F,U,Chi))
 
@@ -378,7 +384,7 @@ def build_data_matrix2(files_path, numberofpoints, n_sigma=3, max_iter=1000):
       if i%100 == 0:
         print("Building matrix :", i, "/", len(files_list))
 
-  return DATA,list_of_names
+  return DATA,list_of_names, mean_lower_threshold-n_sigma*std_lower_threshold, mean_upper_threshold+n_sigma*std_upper_threshold
 
 def treat_things(list_keys, physical_data):
   out = {}
@@ -479,7 +485,7 @@ def plot_DATA_2D_in_clusters(DATA, labels):
   plt.gca().set_ylabel(r"Projection sur $X'_2/\sigma'_2$")
   plt.legend()
 
-def print_names_in_cluster(DATA, labels, names):
+def get_names_in_clusters(DATA, labels, names):
   out = {}
   for i in range(len(labels)):
     v = labels[i]
@@ -520,11 +526,44 @@ def show_images_from_names(names, folder, physicsdict, n, ext="fits", title=None
       plt.subplot(n,n, curi)
       plt.imshow(img, cmap="viridis")
       plt.annotate("z = "+str(z)+"\nM = "+str(M)+"\nF_R = "+str(F_R), xy=(10,55), xytext=(10,55), size=6, color='white')
-      Center_of_Mass = scipy.ndimage.measurements.center_of_mass(img)
-      formatted_CoM = Center_of_Mass[::-1]
-      circle = plt.Circle(formatted_CoM, radius=p*F_R, fill=False, color="red")
+      #Center_of_Mass = scipy.ndimage.measurements.center_of_mass(img)
+      #formatted_CoM = Center_of_Mass[::-1]
+      center = (np.shape(img)[0]//2, np.shape(img)[1]//2)
+      circle = plt.Circle(center, radius=p*F_R, fill=False, color="red")
       ax = fig.gca()
       ax.add_artist(circle)
     
   plt.tight_layout()
   plt.show()
+
+def global_curve(matrix, lower_threshold, upper_threshold):
+  """ Représente la courbe de la moyenne des fonctions avec leurs écarts types """
+
+  data = matrix.copy()
+  data = data.T
+  numberofpoints = np.shape(data[:,0])//3
+  U = []
+  F = []
+  Chi = []
+
+  for i, variable in enumerate(data):
+    if i < numberofpoints:
+      U += [[np.mean(variable), np.std(variable)]]
+    elif numberofpoints <= i < 2*numberofpoints:
+      F += [[np.mean(variable), np.std(variable)]]
+    else:
+      Chi += [[np.mean(variable), np.std(variable)]]
+  
+  x = np.linspace(lower_threshold, upper_threshold, numberofpoints)
+  meansU = [np.log(np.abs(i[0])) for i in U]
+  meansF = [np.log(np.abs(i[0])) for i in F]
+  meansChi = [np.log(np.abs(i[0])) for i in Chi]
+  stdsU = [np.log(np.abs(i[1])) for i in U]
+  stdsF = [np.log(np.abs(i[1])) for i in F]
+  stdsChi = [np.log(np.abs(i[1])) for i in Chi]
+
+  return x, meansU, stdsU, meansF, stdsF, meansChi, stdsChi
+
+  """ax = plt.gca()
+  ax.plot(x, means, color = col)
+  ax.fill_between(x, [means[i]+stds[i]*.3 for i in range(len(x))], [means[i]-stds[i]*.3 for i in range(len(x))], facecolor=col, alpha=0.2)"""
