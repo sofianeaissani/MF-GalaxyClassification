@@ -14,6 +14,7 @@ def main(myFile):
     # Importer l'image dans file1. L'image doit être "normalisée" entre 0 et 255 comme d'hab avec coolrange
 
     file1, name, ext = get_image(myFile)
+    file1 = cool_range(file1)
     file1 = np.clip(np.rint(file1), 0, 255)
     
     # Tracer l'histogramme de l'image : nb de pixels pour chaque valeur d'intensité (lissé)

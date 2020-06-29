@@ -31,6 +31,7 @@ def init_args():
 def main():
 
   global args
+  numberofpoints = 1000 
   
   if args.load:
     DATA = np.load('npy/'+args.load+'.npy')
@@ -38,7 +39,7 @@ def main():
 
   else:
     replace_special_characters(args.images_path)
-    DATA, names = build_data_matrix2(args.images_path, numberofpoints = 1000, n_sigma=3, max_iter=900)
+    DATA, names, lower_threshold, upper_threshold = build_data_matrix2(args.images_path, numberofpoints = numberofpoints, n_sigma=0, max_iter=900)
     if args.save:
         np.save('npy/'+args.save+'.npy', DATA)
         np.save('npy/'+args.save+"_names.npy", names)
@@ -53,7 +54,7 @@ def main():
     print('shape data_reduced :', data_reduced.shape)
     print('shape valeurs propres :', valp.shape)
     print('shape vecteurs propres :', espp.shape)
-    print('somme des vp :', np.sum(valp), "pourcentage des 3 premieres :", sorted_valp[0][1] + sorted_valp[1][1] + sorted_valp[2][1])
+    print('somme des vp :', np.sum(valp), "fraction des 3 premieres :", sorted_valp[0][1] + sorted_valp[1][1] + sorted_valp[2][1])
 
     #print('tableau des vp :', valp)
     eigenvalues_plot(valp, 25)
@@ -74,13 +75,15 @@ def main():
     plt.show()
 
     physicsdict = extract_galaxies_data("data/dataset1_z075-100_M214/dataset1_z075-100_M214")
-    clustersdict = print_names_in_cluster(new_DATA, labels, names)
-    #export_groups_to_TOPCAT(clustersdict, physicsdict, "data/dataset1_z075-100_M214/output/output")
+    clustersdict = get_names_in_clusters(new_DATA, labels, names)
+    #export_groups_to_TOPCAT(clustersdict, physicsdict, "data/dataset1_z075-100_M214/output/output_localNR")
     for k in clustersdict.keys():
       show_images_from_names(clustersdict[k], args.images_path, physicsdict, 4, title="Groupe "+r"$\mathcal{" + chr(65+k)+r"}$")
 
 
-    if True:
+
+
+    """if True:
       separ_DATA = {}
       for i, indiv in enumerate(DATA):
         v = labels[i]
@@ -91,29 +94,32 @@ def main():
         separ_DATA[k] = np.float64(separ_DATA[k])
       cols = ["blue", "orange", "green", "red", "purple", "grey", "brown", "pink", "purple", "cyan", "beige", "deeppink"]
     
-      mxi = min(5, len(cols), len(separ_DATA.keys()))
+      mxi = min(6, len(cols), len(separ_DATA.keys()))
       size_window = [10,4]
       fig = plt.figure(figsize = (*size_window,))
       fig.add_subplot(1,4,2)
       for i,k in enumerate(separ_DATA.keys()):
         if i < mxi:
-          mt.global_curve2(separ_DATA[k][:,:100], cols[i])
+          x, meansU, stdsU, meansF, stdsF, meansChi, stdsChi = global_curve(separ_DATA[k][:,:numberofpoints], lower_threshold, upper_threshold)
+          ax = plt.gca()
+          ax.plot(x, means, color = col[i])
+          ax.fill_between(x, [means[i]+stds[i]*.3 for i in range(len(x))], [means[i]-stds[i]*.3 for i in range(len(x))], facecolor=col[i], alpha=0.2)
       plt.title("Aire F")
       fig.add_subplot(1,4,3)
       for i,k in enumerate(separ_DATA.keys()):
         if i < mxi:
-          mt.global_curve2(separ_DATA[k][:,100:200], cols[i])
+          global_curve(separ_DATA[k][:,numberofpoints:2*numberofpoints], lower_threshold, upper_threshold)
       plt.title("Périmètre U")
       fig.add_subplot(1,4,4)
       for i,k in enumerate(separ_DATA.keys()):
         if i < mxi:
-          mt.global_curve2(separ_DATA[k][:,200:300], cols[i])
+          global_curve(separ_DATA[k][:,2*numberofpoints:3*numberofpoints], lower_threshold, upper_threshold)
       plt.title(r"Caractéristique d'Euler $\chi$")
 
     fig.add_subplot(1,4,1)
     plot_DATA_2D_in_clusters(new_DATA, labels)
     plt.tight_layout( )
-    plt.show()
+    plt.show()"""
 
 
 if __name__ == "__main__":

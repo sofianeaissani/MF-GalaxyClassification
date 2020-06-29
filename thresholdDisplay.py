@@ -1,14 +1,14 @@
 import sys
 import matplotlib.pyplot as plt
 from libs.imProcess import *
-from libs.MF import *
+#from libs.MF import *
 import argparse
 import numpy as np
 from scipy import ndimage, misc
 import imageio
 
 
-def main(myFile):
+def main(myFile, cutout_size):
 
     global args
 
@@ -22,12 +22,17 @@ def main(myFile):
     d = a.copy()
     e = a.copy()"""
 
-    linearspace = np.linspace(NUMIN, NUMAX, 400)
-    F, U, Chi = calcul_fonctionelles(a, NUMIN, NUMAX, 400)
-    plt.plot(linearspace, F)
-    plt.plot(linearspace, U)
-    plt.plot(linearspace, Chi)
+    a_ = second_inflexion_point(a, cutout_size)
+    a__ = second_inflexion_point(a_, cutout_size)
+
+    plt.subplot(1, 2, 1)
+    plt.imshow(a_)
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(a__)
+
     plt.show()
+
 
 """
     a_ = a >= (NUMAX-NUMIN)/6
@@ -74,6 +79,7 @@ def init_args():
 
     parser = argparse.ArgumentParser(description='TakeMeOn')
     parser.add_argument("file", help='file in format FITS or DAT', type=str)
+    parser.add_argument("cutout_size", help='cutout size', type=int)
     args = parser.parse_args()
 
     args.fantom = True
@@ -81,4 +87,4 @@ def init_args():
 
 if __name__ == "__main__":
     init_args()
-    main(args.file)
+    main(args.file, args.cutout_size)
