@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import math
 
 from astropy.io import fits
@@ -224,32 +225,148 @@ def quadrimean(img,x,y):
       summ += img[y][x]
   return summ/4
 
-def second_inflexion_point(file1):
+"""def second_inflexion_point(file1, cutoutsize):
 
-  file1 = np.clip(np.rint(file1), 0, 255)
-    
-  NbOccurs = []
-  threshold = [i for i in range(256)]
-  for i in threshold:
-    Occurs_i = np.count_nonzero(file1 == i)
-    NbOccurs.append(Occurs_i)
-    
+
+  arrays = np.array_split(file1, 10)
+
+  for array in arrays:
+
+    numin = np.min(array)
+    numax = np.max(array)
+      
+    NbOccurs = []
+    threshold = [numin + i*(numax-numin)/300 for i in range(300)]
+    for i in threshold:
+      Occurs_i = np.count_nonzero(array == i)
+      NbOccurs.append(Occurs_i)
+      
+    kernel = signal.gaussian(28, 7)
+    NbOccursSmooth = np.convolve(NbOccurs, kernel, mode='same')
+    accroiss = np.diff(NbOccursSmooth, append=[0])
+    accroissSmooth = np.convolve(accroiss, kernel, mode='same')
+    second = np.diff(accroissSmooth, append=[0])
+    secondSmooth = np.convolve(second, kernel, mode='same')
+
+    threshold = np.argmin(secondSmooth)
+    while secondSmooth[threshold+1] < 0:
+      threshold += 1
+
+    array[array < threshold] = threshold
+    array = array - threshold
+
+  file2 = np.vstack([array for array in arrays])
+  file2 = np.reshape(file2, np.shape(file1))
+
+  return file2"""
+
+def second_inflexion_point(image, cutout_size):
+
+  img = np.copy(image)
+
+  n,m = np.shape(img)[0], np.shape(img)[1]
+
+  i = 0
+  j = 0
+  
   kernel = signal.gaussian(28, 7)
+
+  while i + cutout_size < n:
+    while j + cutout_size < m:
+      
+
+      ### Initialize temporary table
+      temp = img[i:i+cutout_size, j:j+cutout_size]
+      numin = np.min(temp)
+      numax = np.max(temp)
+
+      ### Make the intensity histogram
+      NbOccurs = []
+      threshold = [numin + k*(numax-numin)/300 for k in range(300)]
+      
+      for k in threshold:
+        Occurs = np.count_nonzero(np.logical_and(k <= temp, temp < k + (numax-numin)/300))
+        NbOccurs.append(Occurs)
+      
+      NbOccursSmooth = np.convolve(NbOccurs, kernel, mode='same')
+      accroiss = np.diff(NbOccursSmooth, append=[0])
+      accroissSmooth = np.convolve(accroiss, kernel, mode='same')
+      second = np.diff(accroissSmooth, append=[0])
+      secondSmooth = np.convolve(second, kernel, mode='same')
+
+      k = np.argmin(secondSmooth)
+      while secondSmooth[k] < 0:
+        k += 1
+      critical_threshold = threshold[k]
+
+      temp[temp < critical_threshold] = critical_threshold
+      temp = temp - critical_threshold
+
+      img[i:i+cutout_size, j:j+cutout_size] = temp
+    
+      j += cutout_size
+    i += cutout_size
+    if i + cutout_size < n: j = 0
+
+  ### right side
+
+  temp = img[:i, j:]
+  numin = np.min(temp)
+  numax = np.max(temp)
+
+
+  NbOccurs = []
+  threshold = [numin + k*(numax-numin)/300 for k in range(300)]
+  for k in threshold:
+    Occurs = np.count_nonzero(np.logical_and(k <= temp, temp < k + (numax-numin)/300))
+    NbOccurs.append(Occurs)
+ 
   NbOccursSmooth = np.convolve(NbOccurs, kernel, mode='same')
   accroiss = np.diff(NbOccursSmooth, append=[0])
   accroissSmooth = np.convolve(accroiss, kernel, mode='same')
   second = np.diff(accroissSmooth, append=[0])
   secondSmooth = np.convolve(second, kernel, mode='same')
 
-  threshold = np.argmin(secondSmooth)
-  while secondSmooth[threshold+1] < 0:
-    threshold += 1
+  k = np.argmin(secondSmooth)
+  while secondSmooth[k] < 0:
+    k += 1
+  critical_threshold = threshold[k]
 
-  file2 = file1.copy()
-  file2[file2 < threshold] = threshold
-  file2 = file2 - threshold
+  temp[temp < critical_threshold] = critical_threshold
+  temp = temp - critical_threshold
 
-  return file2
+  img[:i, j:] = temp
+      
+  ### bottom side and right-bottom side
+
+  temp = img[i:, :]
+  numin = np.min(temp)
+  numax = np.max(temp)
+
+
+  NbOccurs = []
+  threshold = [numin + k*(numax-numin)/300 for k in range(300)]
+  for k in threshold:
+    Occurs = np.count_nonzero(np.logical_and(k <= temp, temp < k + (numax-numin)/300))
+    NbOccurs.append(Occurs)
+
+  NbOccursSmooth = np.convolve(NbOccurs, kernel, mode='same')
+  accroiss = np.diff(NbOccursSmooth, append=[0])
+  accroissSmooth = np.convolve(accroiss, kernel, mode='same')
+  second = np.diff(accroissSmooth, append=[0])
+  secondSmooth = np.convolve(second, kernel, mode='same')
+
+  k = np.argmin(secondSmooth)
+  while secondSmooth[k] < 0:
+    k += 1
+  critical_threshold = threshold[k]
+
+  temp[temp < critical_threshold] = critical_threshold
+  temp = temp - critical_threshold
+
+  img[i:, :] = temp
+
+  return img
 
 def normalize(image):
         m, M = np.min(image), np.max(image)
