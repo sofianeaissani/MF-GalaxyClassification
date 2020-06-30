@@ -41,8 +41,10 @@ def export_groups_to_TOPCAT(clustersdict, physicsdict, output_path):
         clustersArrays.append(clusterArray)
     for i, group in enumerate(clustersArrays):
         columns = []
-        for j in range(np.shape(clustersArrays[i])[1]):
-            columns.append(fits.Column(name=list(physicsdict[example_key].keys())[j], array=clustersArrays[i][:,j], format='D'))
+        print(clustersArrays[i], np.shape(clustersArrays[i]))
+        group = np.atleast_2d(group)
+        for j in range(np.shape(group)[1]):
+            columns.append(fits.Column(name=list(physicsdict[example_key].keys())[j], array=group[:,j], format='D'))
         t = fits.BinTableHDU.from_columns(columns)
         t.writeto(output_path+'_Group'+chr(65+i)+".fits")
 
