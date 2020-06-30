@@ -76,7 +76,7 @@ def main():
 
     physicsdict = extract_galaxies_data("data/dataset1_z075-100_M214/dataset1_z075-100_M214")
     clustersdict = get_names_in_clusters(new_DATA, labels, names)
-    export_groups_to_TOPCAT(clustersdict, physicsdict, "data/dataset1_z075-100_M214/output/output_localNR")
+    export_groups_to_TOPCAT(clustersdict, physicsdict, "data/dataset1_z075-100_M214/output/output_SegmapNR1stTry")
     for k in clustersdict.keys():
       show_images_from_names(clustersdict[k], args.images_path, physicsdict, 4, title="Groupe "+r"$\mathcal{" + chr(65+k)+r"}$")
 

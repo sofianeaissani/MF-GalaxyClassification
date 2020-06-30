@@ -24,6 +24,8 @@ def replace_special_characters(path):
     elif i[-4:] == "fits":
       n_name = i[:-5].replace("-", "_").replace("\x1d", "").replace("+", "_").replace(".","p")
       ext = i[-4:]
+    elif os.path.isdir(os.path.join(path, i)):
+      continue
     else:
       n_name = i
     os.rename(path+'/' + i,path+'/'+ n_name+'.'+ext)
@@ -343,8 +345,21 @@ def build_data_matrix2(files_path, numberofpoints, n_sigma=3, max_iter=1000):
       myFile = files_path + "/" + v
 
       img = get_image(myFile)[0]
-      img = second_inflexion_point(img, 40)
+      #img = second_inflexion_point(img, 40)
       #img = smooth_img(img, 2)
+
+      print(files_path)
+      print(myFile)
+      print("source-extractor " + myFile + " -c /usr/share/source-extractor/default.sex")
+      print('sex_output/segmentation.fits')
+
+      os.system("mkdir sex_output")
+      os.system("source-extractor " + myFile + " -c /usr/share/source-extractor/default.sex")
+      segmentationMap = get_image('sex_output/segmentation.fits')[0]
+      segmentationMap[segmentationMap > 2] = 0
+      segmentationMap[segmentationMap != 0] = 1
+      img = img * segmentationMap
+
 
       images_list.append(img)
       numax = np.max(img)
